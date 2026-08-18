@@ -1,0 +1,441 @@
+{
+  "summary": {
+    "count": 20,
+    "recallAtK": 0,
+    "precisionAtK": 0,
+    "mrr": 0,
+    "answerCorrectness": 0,
+    "errors": 20
+  },
+  "rows": [
+    {
+      "id": "exact-case-reference",
+      "query": "Pull the docket for case reference CASE-2024-001.",
+      "expected": {
+        "cases": [
+          "CASE-2024-001"
+        ],
+        "documents": []
+      },
+      "retrieved": {
+        "cases": [],
+        "documents": []
+      },
+      "metrics": {
+        "recall@8": 0,
+        "precision@8": 0,
+        "mrr": 0
+      },
+      "answerCorrectness": 0,
+      "error": "OpenAI preflight failed (insufficient_quota): You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors."
+    },
+    {
+      "id": "active-cases",
+      "query": "Show me active cases.",
+      "expected": {
+        "cases": [
+          "active"
+        ],
+        "documents": []
+      },
+      "retrieved": {
+        "cases": [],
+        "documents": []
+      },
+      "metrics": {
+        "recall@8": 0,
+        "precision@8": 0,
+        "mrr": 0
+      },
+      "answerCorrectness": 0,
+      "error": "OpenAI preflight failed (insufficient_quota): You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors."
+    },
+    {
+      "id": "high-priority",
+      "query": "Find high priority legal matters.",
+      "expected": {
+        "cases": [
+          "high"
+        ],
+        "documents": []
+      },
+      "retrieved": {
+        "cases": [],
+        "documents": []
+      },
+      "metrics": {
+        "recall@8": 0,
+        "precision@8": 0,
+        "mrr": 0
+      },
+      "answerCorrectness": 0,
+      "error": "OpenAI preflight failed (insufficient_quota): You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors."
+    },
+    {
+      "id": "party-contact",
+      "query": "What contact details do we have for Mohammad Al-Hassan?",
+      "expected": {
+        "cases": [
+          "Mohammad Al-Hassan"
+        ],
+        "documents": []
+      },
+      "retrieved": {
+        "cases": [],
+        "documents": []
+      },
+      "metrics": {
+        "recall@8": 0,
+        "precision@8": 0,
+        "mrr": 0
+      },
+      "answerCorrectness": 0,
+      "error": "OpenAI preflight failed (insufficient_quota): You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors."
+    },
+    {
+      "id": "defendant-address",
+      "query": "Show the defendant address for CASE-2024-001.",
+      "expected": {
+        "cases": [
+          "CASE-2024-001"
+        ],
+        "documents": []
+      },
+      "retrieved": {
+        "cases": [],
+        "documents": []
+      },
+      "metrics": {
+        "recall@8": 0,
+        "precision@8": 0,
+        "mrr": 0
+      },
+      "answerCorrectness": 0,
+      "error": "OpenAI preflight failed (insufficient_quota): You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors."
+    },
+    {
+      "id": "next-hearing",
+      "query": "When is the next hearing for CASE-2024-001?",
+      "expected": {
+        "cases": [
+          "CASE-2024-001"
+        ],
+        "documents": []
+      },
+      "retrieved": {
+        "cases": [],
+        "documents": []
+      },
+      "metrics": {
+        "recall@8": 0,
+        "precision@8": 0,
+        "mrr": 0
+      },
+      "answerCorrectness": 0,
+      "error": "OpenAI preflight failed (insufficient_quota): You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors."
+    },
+    {
+      "id": "fraud-cases",
+      "query": "Find fraud cases.",
+      "expected": {
+        "cases": [
+          "Fraud"
+        ],
+        "documents": []
+      },
+      "retrieved": {
+        "cases": [],
+        "documents": []
+      },
+      "metrics": {
+        "recall@8": 0,
+        "precision@8": 0,
+        "mrr": 0
+      },
+      "answerCorrectness": 0,
+      "error": "OpenAI preflight failed (insufficient_quota): You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors."
+    },
+    {
+      "id": "contract-documents",
+      "query": "Search documents that mention contract payment terms.",
+      "expected": {
+        "cases": [],
+        "documents": [
+          "contract"
+        ]
+      },
+      "retrieved": {
+        "cases": [],
+        "documents": []
+      },
+      "metrics": {
+        "recall@8": 0,
+        "precision@8": 0,
+        "mrr": 0
+      },
+      "answerCorrectness": 0,
+      "error": "OpenAI preflight failed (insufficient_quota): You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors."
+    },
+    {
+      "id": "evidence-documents",
+      "query": "Find evidence documents related to theft.",
+      "expected": {
+        "cases": [],
+        "documents": [
+          "evidence",
+          "theft"
+        ]
+      },
+      "retrieved": {
+        "cases": [],
+        "documents": []
+      },
+      "metrics": {
+        "recall@8": 0,
+        "precision@8": 0,
+        "mrr": 0
+      },
+      "answerCorrectness": 0,
+      "error": "OpenAI preflight failed (insufficient_quota): You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors."
+    },
+    {
+      "id": "court-orders",
+      "query": "Show court orders or scheduling orders for CASE-2024-001.",
+      "expected": {
+        "cases": [
+          "CASE-2024-001"
+        ],
+        "documents": [
+          "court order",
+          "scheduling order"
+        ]
+      },
+      "retrieved": {
+        "cases": [],
+        "documents": []
+      },
+      "metrics": {
+        "recall@8": 0,
+        "precision@8": 0,
+        "mrr": 0
+      },
+      "answerCorrectness": 0,
+      "error": "OpenAI preflight failed (insufficient_quota): You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors."
+    },
+    {
+      "id": "recent-cases",
+      "query": "Which cases were filed recently?",
+      "expected": {
+        "cases": [
+          "recent"
+        ],
+        "documents": []
+      },
+      "retrieved": {
+        "cases": [],
+        "documents": []
+      },
+      "metrics": {
+        "recall@8": 0,
+        "precision@8": 0,
+        "mrr": 0
+      },
+      "answerCorrectness": 0,
+      "error": "OpenAI preflight failed (insufficient_quota): You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors."
+    },
+    {
+      "id": "assigned-lawyer",
+      "query": "Which cases are assigned to Ahmad?",
+      "expected": {
+        "cases": [
+          "Ahmad"
+        ],
+        "documents": []
+      },
+      "retrieved": {
+        "cases": [],
+        "documents": []
+      },
+      "metrics": {
+        "recall@8": 0,
+        "precision@8": 0,
+        "mrr": 0
+      },
+      "answerCorrectness": 0,
+      "error": "OpenAI preflight failed (insufficient_quota): You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors."
+    },
+    {
+      "id": "civil-cases-with-documents",
+      "query": "Find civil cases that have contract documents.",
+      "expected": {
+        "cases": [
+          "Civil"
+        ],
+        "documents": [
+          "contract"
+        ]
+      },
+      "retrieved": {
+        "cases": [],
+        "documents": []
+      },
+      "metrics": {
+        "recall@8": 0,
+        "precision@8": 0,
+        "mrr": 0
+      },
+      "answerCorrectness": 0,
+      "error": "OpenAI preflight failed (insufficient_quota): You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors."
+    },
+    {
+      "id": "case-party-role",
+      "query": "Find cases where the party is a witness.",
+      "expected": {
+        "cases": [
+          "witness"
+        ],
+        "documents": []
+      },
+      "retrieved": {
+        "cases": [],
+        "documents": []
+      },
+      "metrics": {
+        "recall@8": 0,
+        "precision@8": 0,
+        "mrr": 0
+      },
+      "answerCorrectness": 0,
+      "error": "OpenAI preflight failed (insufficient_quota): You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors."
+    },
+    {
+      "id": "public-prosecutor-memo",
+      "query": "Search prosecutor memos for financial fraud.",
+      "expected": {
+        "cases": [
+          "financial fraud"
+        ],
+        "documents": []
+      },
+      "retrieved": {
+        "cases": [],
+        "documents": []
+      },
+      "metrics": {
+        "recall@8": 0,
+        "precision@8": 0,
+        "mrr": 0
+      },
+      "answerCorrectness": 0,
+      "error": "OpenAI preflight failed (insufficient_quota): You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors."
+    },
+    {
+      "id": "document-by-tag",
+      "query": "Find confidential uploaded documents.",
+      "expected": {
+        "cases": [],
+        "documents": [
+          "Confidential"
+        ]
+      },
+      "retrieved": {
+        "cases": [],
+        "documents": []
+      },
+      "metrics": {
+        "recall@8": 0,
+        "precision@8": 0,
+        "mrr": 0
+      },
+      "answerCorrectness": 0,
+      "error": "OpenAI preflight failed (insufficient_quota): You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors."
+    },
+    {
+      "id": "arabic-active-cases",
+      "query": "أظهر لي القضايا النشطة",
+      "expected": {
+        "cases": [
+          "active",
+          "نشطة"
+        ],
+        "documents": []
+      },
+      "retrieved": {
+        "cases": [],
+        "documents": []
+      },
+      "metrics": {
+        "recall@8": 0,
+        "precision@8": 0,
+        "mrr": 0
+      },
+      "answerCorrectness": 0,
+      "error": "OpenAI preflight failed (insufficient_quota): You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors."
+    },
+    {
+      "id": "arabic-case-number",
+      "query": "ابحث عن القضية CASE-2024-001",
+      "expected": {
+        "cases": [
+          "CASE-2024-001"
+        ],
+        "documents": []
+      },
+      "retrieved": {
+        "cases": [],
+        "documents": []
+      },
+      "metrics": {
+        "recall@8": 0,
+        "precision@8": 0,
+        "mrr": 0
+      },
+      "answerCorrectness": 0,
+      "error": "OpenAI preflight failed (insufficient_quota): You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors."
+    },
+    {
+      "id": "arabic-documents-fraud",
+      "query": "ابحث في المستندات عن الاحتيال",
+      "expected": {
+        "cases": [],
+        "documents": [
+          "fraud",
+          "الاحتيال"
+        ]
+      },
+      "retrieved": {
+        "cases": [],
+        "documents": []
+      },
+      "metrics": {
+        "recall@8": 0,
+        "precision@8": 0,
+        "mrr": 0
+      },
+      "answerCorrectness": 0,
+      "error": "OpenAI preflight failed (insufficient_quota): You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors."
+    },
+    {
+      "id": "follow-up-context",
+      "query": "After finding CASE-2024-001, tell me the contact details for the defendant.",
+      "expected": {
+        "cases": [
+          "CASE-2024-001"
+        ],
+        "documents": []
+      },
+      "retrieved": {
+        "cases": [],
+        "documents": []
+      },
+      "metrics": {
+        "recall@8": 0,
+        "precision@8": 0,
+        "mrr": 0
+      },
+      "answerCorrectness": 0,
+      "error": "OpenAI preflight failed (insufficient_quota): You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors."
+    }
+  ],
+  "blockedReason": "OpenAI preflight failed (insufficient_quota): You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors."
+}

@@ -1,0 +1,208 @@
+[
+  {
+    "id": "exact-case-reference",
+    "query": "Pull the docket for case reference CASE-2024-001.",
+    "locale": "en",
+    "expected": {
+      "cases": ["CASE-2024-001"],
+      "documents": []
+    },
+    "rubric": "The answer identifies the requested case and summarizes the available case details without introducing unsupported facts."
+  },
+  {
+    "id": "active-cases",
+    "query": "Show me active cases.",
+    "locale": "en",
+    "expected": {
+      "cases": ["active"],
+      "documents": []
+    },
+    "rubric": "The answer should list or summarize active cases and mention their status."
+  },
+  {
+    "id": "high-priority",
+    "query": "Find high priority legal matters.",
+    "locale": "en",
+    "expected": {
+      "cases": ["high"],
+      "documents": []
+    },
+    "rubric": "The answer should focus on cases marked high priority."
+  },
+  {
+    "id": "party-contact",
+    "query": "What contact details do we have for Mohammad Al-Hassan?",
+    "locale": "en",
+    "expected": {
+      "cases": ["Mohammad Al-Hassan"],
+      "documents": []
+    },
+    "rubric": "The answer should use party/contact fields such as role, phone, email, or address when present."
+  },
+  {
+    "id": "defendant-address",
+    "query": "Show the defendant address for CASE-2024-001.",
+    "locale": "en",
+    "expected": {
+      "cases": ["CASE-2024-001"],
+      "documents": []
+    },
+    "rubric": "The answer should ground the address in the party data for the referenced case."
+  },
+  {
+    "id": "next-hearing",
+    "query": "When is the next hearing for CASE-2024-001?",
+    "locale": "en",
+    "expected": {
+      "cases": ["CASE-2024-001"],
+      "documents": []
+    },
+    "rubric": "The answer should provide the next hearing date if present."
+  },
+  {
+    "id": "fraud-cases",
+    "query": "Find fraud cases.",
+    "locale": "en",
+    "expected": {
+      "cases": ["Fraud"],
+      "documents": []
+    },
+    "rubric": "The answer should retrieve cases categorized or described as fraud."
+  },
+  {
+    "id": "contract-documents",
+    "query": "Search documents that mention contract payment terms.",
+    "locale": "en",
+    "expected": {
+      "cases": [],
+      "documents": ["contract"]
+    },
+    "rubric": "The answer should surface documents whose text or metadata discusses contract payment terms."
+  },
+  {
+    "id": "evidence-documents",
+    "query": "Find evidence documents related to theft.",
+    "locale": "en",
+    "expected": {
+      "cases": [],
+      "documents": ["evidence", "theft"]
+    },
+    "rubric": "The answer should retrieve evidence documents and include relevant excerpts when available."
+  },
+  {
+    "id": "court-orders",
+    "query": "Show court orders or scheduling orders for CASE-2024-001.",
+    "locale": "en",
+    "expected": {
+      "cases": ["CASE-2024-001"],
+      "documents": ["court order", "scheduling order"]
+    },
+    "rubric": "The answer should combine the referenced case with matching court-order documents."
+  },
+  {
+    "id": "recent-cases",
+    "query": "Which cases were filed recently?",
+    "locale": "en",
+    "expected": {
+      "cases": ["recent"],
+      "documents": []
+    },
+    "rubric": "The answer should emphasize recent filing dates."
+  },
+  {
+    "id": "assigned-lawyer",
+    "query": "Which cases are assigned to Ahmad?",
+    "locale": "en",
+    "expected": {
+      "cases": ["Ahmad"],
+      "documents": []
+    },
+    "rubric": "The answer should match assignment data for Ahmad or a similarly named lawyer."
+  },
+  {
+    "id": "civil-cases-with-documents",
+    "query": "Find civil cases that have contract documents.",
+    "locale": "en",
+    "expected": {
+      "cases": ["Civil"],
+      "documents": ["contract"]
+    },
+    "rubric": "The answer should combine structured civil case filters with document evidence."
+  },
+  {
+    "id": "case-party-role",
+    "query": "Find cases where the party is a witness.",
+    "locale": "en",
+    "expected": {
+      "cases": ["witness"],
+      "documents": []
+    },
+    "rubric": "The answer should retrieve cases using party role data."
+  },
+  {
+    "id": "public-prosecutor-memo",
+    "query": "Search prosecutor memos for financial fraud.",
+    "locale": "en",
+    "expected": {
+      "cases": ["financial fraud"],
+      "documents": []
+    },
+    "rubric": "The answer should use the public prosecutor memo or similar case notes."
+  },
+  {
+    "id": "document-by-tag",
+    "query": "Find confidential uploaded documents.",
+    "locale": "en",
+    "expected": {
+      "cases": [],
+      "documents": ["Confidential"]
+    },
+    "rubric": "The answer should use document tags or metadata to identify confidential documents."
+  },
+  {
+    "id": "arabic-active-cases",
+    "query": "أظهر لي القضايا النشطة",
+    "locale": "ar",
+    "expected": {
+      "cases": ["active", "نشطة"],
+      "documents": []
+    },
+    "rubric": "The answer should correctly handle Arabic and retrieve active cases."
+  },
+  {
+    "id": "arabic-case-number",
+    "query": "ابحث عن القضية CASE-2024-001",
+    "locale": "ar",
+    "expected": {
+      "cases": ["CASE-2024-001"],
+      "documents": []
+    },
+    "rubric": "The answer should resolve the exact case reference from an Arabic query."
+  },
+  {
+    "id": "arabic-documents-fraud",
+    "query": "ابحث في المستندات عن الاحتيال",
+    "locale": "ar",
+    "expected": {
+      "cases": [],
+      "documents": ["fraud", "الاحتيال"]
+    },
+    "rubric": "The answer should retrieve document content related to fraud from an Arabic query."
+  },
+  {
+    "id": "follow-up-context",
+    "query": "After finding CASE-2024-001, tell me the contact details for the defendant.",
+    "locale": "en",
+    "history": [
+      {
+        "role": "user",
+        "content": "Show me CASE-2024-001"
+      }
+    ],
+    "expected": {
+      "cases": ["CASE-2024-001"],
+      "documents": []
+    },
+    "rubric": "The answer should use conversation context to resolve the case and return defendant contact details."
+  }
+]

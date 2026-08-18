@@ -1,0 +1,30 @@
+[
+  {
+    "id": "fixture-doc-1",
+    "uniqueDocumentId": "fixture-doc-1",
+    "caseId": "fixture-case-1",
+    "title": "Fixture Contract",
+    "documentType": "Contract",
+    "filePath": "cases/FIXTURE-001/documents/fixture-doc-1.pdf",
+    "fileName": "fixture-doc-1.pdf",
+    "originalName": "fixture-contract.pdf",
+    "mimeType": "application/pdf",
+    "uploadedById": "fixture-user-1",
+    "userName": "Fixture User",
+    "userEmail": "fixture@example.com"
+  },
+  {
+    "id": "fixture-doc-2",
+    "uniqueDocumentId": "fixture-doc-2",
+    "caseId": "fixture-case-2",
+    "title": "Fixture Evidence",
+    "documentType": "Evidence",
+    "filePath": "cases/FIXTURE-002/documents/fixture-doc-2.docx",
+    "fileName": "fixture-doc-2.docx",
+    "originalName": "fixture-evidence.docx",
+    "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "uploadedById": "fixture-user-1",
+    "userName": "Fixture User",
+    "userEmail": "fixture@example.com"
+  }
+]

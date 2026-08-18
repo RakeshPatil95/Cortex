@@ -1,0 +1,295 @@
+// Prisma schema for Supabase PostgreSQL
+// Supports both pooling and direct URL connections
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// Enums for better type safety
+enum CaseStatus {
+  active
+  pending
+  closed
+}
+
+enum CasePriority {
+  high
+  medium
+  low
+}
+
+enum PartyRole {
+  defendant
+  plaintiff
+  co_defendant
+  witness
+  expert
+  lawyer
+  other
+}
+
+enum ChatRole {
+  user
+  assistant
+}
+
+enum ChatMessageStatus {
+  completed
+  error
+}
+
+// NextAuth User model
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?   // For email/password auth
+  accounts      Account[]
+  sessions      Session[]
+  createdCases  LegalCase[]
+  uploadedDocuments CaseDocument[]
+  chatConversations ChatConversation[]
+
+  @@map("users")
+}
+
+model ChatConversation {
+  id            String        @id @default(cuid())
+  userId        String
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title         String
+  lastMessageAt DateTime      @default(now())
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  messages      ChatMessage[]
+
+  @@index([userId, lastMessageAt])
+  @@map("chat_conversations")
+}
+
+model ChatMessage {
+  id                 String              @id @default(cuid())
+  conversationId     String
+  conversation       ChatConversation    @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  turnId             String
+  role               ChatRole
+  content            String              @db.Text
+  results            Json?
+  suggestedQuestions Json?
+  status             ChatMessageStatus   @default(completed)
+  createdAt          DateTime            @default(now())
+
+  @@unique([turnId, role])
+  @@index([conversationId, createdAt])
+  @@map("chat_messages")
+}
+
+// NextAuth Account model
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+// NextAuth Session model
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+// NextAuth Verification Token model
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+
+
+
+// Case Party  model (Enhanced defendants/plaintiffs)
+model CaseParty {
+  id          String    @id @default(cuid())
+  caseId      String
+  case        LegalCase @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  name        String
+  civilId     String?
+  role        PartyRole // Using enum for type safety
+  address     String?
+  phone       String?
+  email       String?
+  notes       String?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("case_parties")
+}
+
+// Hearing Outcome model
+model HearingOutcome {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  nameAr      String?     // Arabic name
+  description String?
+  isActive    Boolean     @default(true)
+  hearings    CaseHearing[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@map("hearing_outcomes")
+}
+
+// Case Hearing model
+model CaseHearing {
+  id          String         @id @default(cuid())
+  caseId      String
+  case        LegalCase      @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  hearingDate DateTime
+  outcomeId   String?
+  outcome     HearingOutcome? @relation(fields: [outcomeId], references: [id])
+  notes       String?
+  nextHearing DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@map("case_hearings")
+}
+
+// Legal Case model (Enhanced)
+model LegalCase {
+  id                    String           @id @default(cuid())
+  serialNumber          String           @unique // الرقم الالي
+  caseNumber            String           // الرقم القضية
+  caseType              String           // نوع القضية (legacy field, kept for backward compatibility)
+  // Store actual values from frontend
+  caseCategory          String?          // Category name
+  caseSubType           String?          // Sub-type name
+  currentStage          String?          // Stage name
+  assignedTo            String?          // Assigned user name
+  publicProsecutorMemo  String?          // مذكرة يرأي النيابة العامة
+  status                CaseStatus       @default(active) // Using enum for type safety
+  priority              CasePriority     @default(medium) // Using enum for type safety
+  filedDate             DateTime         @default(now())
+  nextHearing           DateTime?
+  createdAt             DateTime         @default(now())
+  updatedAt             DateTime         @updatedAt
+  documents             CaseDocument[]
+  parties               CaseParty[]      // All parties (defendants, plaintiffs, etc.)
+  hearings              CaseHearing[]    // Case hearings
+  createdById           String
+  createdBy             User             @relation(fields: [createdById], references: [id], onDelete: Cascade)
+
+  @@index([caseNumber])
+  @@index([createdAt])
+  @@index([currentStage])
+  @@index([assignedTo])
+  @@index([status, priority])
+  @@map("legal_cases")
+}
+
+// Case Document model (Enhanced)
+model CaseDocument {
+  id              String        @id @default(cuid())
+  uniqueDocumentId String       @unique // Auto-generated unique document ID
+  caseId          String
+  case            LegalCase     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  title           String        // Document title (what the document is about)
+  fileName        String
+  originalName    String
+  description     String?       // Document description
+  fileSize        Int           // File size in bytes
+  mimeType        String        // File MIME type
+  filePath        String        // Path to stored file
+  documentType    String?       // Type of document (evidence, contract, correspondence, etc.)
+  tags            String[]      // Document tags as text array
+  uploadedAt      DateTime      @default(now())
+  uploadedById    String
+  uploadedBy      User          @relation(fields: [uploadedById], references: [id], onDelete: Cascade)
+
+  @@index([caseId])
+  @@index([uploadedAt])
+  @@index([documentType])
+  @@map("case_documents")
+}
+
+// RAG document chunk storage backed by pgvector.
+model DocumentChunk {
+  id            String                    @id @default(cuid())
+  documentId    String
+  caseId        String
+  userId        String
+  chunkIndex    Int
+  text          String                    @db.Text
+  heading       String?
+  sectionPath   String[]
+  startPosition Int?
+  endPosition   Int?
+  embedding     Unsupported("vector(512)")
+  searchVector  Unsupported("tsvector")?  @map("search_vector")
+  createdAt     DateTime                  @default(now())
+  updatedAt     DateTime                  @updatedAt
+
+  @@unique([documentId, chunkIndex])
+  @@index([documentId])
+  @@index([caseId])
+  @@index([userId])
+  @@map("document_chunks")
+}
+
+// RAG case-summary vector storage backed by pgvector.
+model CaseVector {
+  id                    String                    @id @default(cuid())
+  caseId                String                    @unique
+  userId                String
+  serialNumber          String?
+  caseNumber            String?
+  caseCategory          String?
+  caseSubType           String?
+  currentStage          String?
+  status                String?
+  priority              String?
+  assignedTo            String?
+  publicProsecutorMemo  String?                   @db.Text
+  parties               String?
+  summary               String                    @db.Text
+  embedding             Unsupported("vector(512)")
+  searchVector          Unsupported("tsvector")?  @map("search_vector")
+  createdAt             DateTime                  @default(now())
+  updatedAt             DateTime                  @updatedAt
+
+  @@index([caseId])
+  @@index([userId])
+  @@map("case_vectors")
+}
