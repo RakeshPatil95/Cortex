@@ -38,6 +38,8 @@ export default function LoginForm() {
         const session = await getSession();
         if (session) {
           router.push(`/${locale}/dashboard`);
+        } else {
+          setError(t('auth.invalidCredentials'));
         }
       }
     } catch (error) {

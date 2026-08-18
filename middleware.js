@@ -68,12 +68,37 @@ export function middleware(request) {
                           pathname.includes('/chat');
 
   if (isProtectedRoute) {
+    const locale = pathname.split('/')[1];
+
+    // Derive the session cookie name from the actual request protocol. Relying on
+    // getToken's own inference breaks behind a proxy: it reads NEXTAUTH_URL, while the
+    // /api/auth handler ignores NEXTAUTH_URL whenever process.env.VERCEL is set and
+    // prefixes the cookie with __Secure- for https. A mismatch makes the token look
+    // absent here even though the session is valid.
+    const isSecure =
+      request.headers.get('x-forwarded-proto') === 'https' ||
+      request.nextUrl.protocol === 'https:';
+
     // Apply auth middleware only to protected routes
     return withAuth(
       function middleware(req) {
         // Add any additional middleware logic here
       },
       {
+        secret: process.env.NEXTAUTH_SECRET,
+        cookies: {
+          sessionToken: {
+            name: isSecure
+              ? '__Secure-next-auth.session-token'
+              : 'next-auth.session-token',
+          },
+        },
+        pages: {
+          // Localized pages, so unauthorized users land on the login screen directly
+          // instead of bouncing through /api/auth/signin.
+          signIn: `/${locale}/auth/login`,
+          error: `/${locale}/auth/error`,
+        },
         callbacks: {
           authorized: ({ token }) => !!token,
         },
