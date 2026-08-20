@@ -35,8 +35,42 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationEllipsis,
+} from '@/components/ui/pagination';
 import { useTranslations } from '@/lib/translations';
 import { caseService } from '@/services/cases';
+
+// GET /api/cases paginates and defaults to 10 per page. The dashboard filters
+// and searches client-side, so it needs the complete set — otherwise the list
+// silently stops at the first page (which is why only 10 of 50 cases showed).
+const CASES_PAGE_SIZE = 100;
+
+// Cases shown per page in the grid. Pagination is client-side over the filtered
+// set so search and status/priority filters still apply across every case, not
+// just the page currently on screen.
+const CASES_PER_PAGE = 10;
+
+async function fetchAllCases() {
+  const first = await caseService.getCases({ page: 1, limit: CASES_PAGE_SIZE });
+  const all = [...(first.cases || [])];
+  const pages = first.pagination?.pages || 1;
+
+  // Walk the remaining pages rather than hard-coding a big limit, so the list
+  // stays complete as the case count grows.
+  for (let page = 2; page <= pages; page += 1) {
+    const next = await caseService.getCases({ page, limit: CASES_PAGE_SIZE });
+    all.push(...(next.cases || []));
+  }
+
+  return all;
+}
 
 export default function DashboardContent() {
   const { data: session } = useSession();
@@ -52,6 +86,7 @@ export default function DashboardContent() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState([]);
   const [priorityFilter, setPriorityFilter] = useState([]);
+  const [page, setPage] = useState(1);
 
   // Fetch cases data
   useEffect(() => {
@@ -60,8 +95,7 @@ export default function DashboardContent() {
     const fetchCases = async () => {
       try {
         setLoading(true);
-        const data = await caseService.getCases();
-        setCases(data.cases || []);
+        setCases(await fetchAllCases());
       } catch (err) {
         console.error('Error fetching cases:', err);
         setError(err.message);
@@ -85,8 +119,7 @@ export default function DashboardContent() {
       try {
         await caseService.deleteCase(caseItem.id);
         // Refresh cases data
-        const data = await caseService.getCases();
-        setCases(data.cases || []);
+        setCases(await fetchAllCases());
       } catch (err) {
         console.error('Error deleting case:', err);
         alert(t('cases.deleteError'));
@@ -148,6 +181,39 @@ export default function DashboardContent() {
   });
 
   const activeFiltersCount = statusFilter.length + priorityFilter.length;
+
+  const totalPages = Math.max(1, Math.ceil(filteredCases.length / CASES_PER_PAGE));
+  // Filtering down to fewer pages can leave `page` past the end; clamp for this
+  // render and correct the state in an effect so the grid is never blank.
+  const currentPage = Math.min(page, totalPages);
+  const pageStart = (currentPage - 1) * CASES_PER_PAGE;
+  const visibleCases = filteredCases.slice(pageStart, pageStart + CASES_PER_PAGE);
+
+  useEffect(() => {
+    if (page > totalPages) {
+      setPage(totalPages);
+    }
+  }, [page, totalPages]);
+
+  // Any change to the search text or filters restarts at the first page.
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm, statusFilter, priorityFilter]);
+
+  // Page numbers to render: always first and last, the current page and its
+  // neighbours, with ellipses standing in for the gaps.
+  const pageNumbers = [];
+  for (let n = 1; n <= totalPages; n += 1) {
+    if (n === 1 || n === totalPages || Math.abs(n - currentPage) <= 1) {
+      pageNumbers.push(n);
+    } else if (pageNumbers[pageNumbers.length - 1] !== 'ellipsis') {
+      pageNumbers.push('ellipsis');
+    }
+  }
+
+  const goToPage = (next) => {
+    setPage(Math.min(Math.max(1, next), totalPages));
+  };
 
   return (
     <div className="space-y-6 min-h-screen">
@@ -289,8 +355,9 @@ export default function DashboardContent() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {filteredCases.map((caseItem) => (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {visibleCases.map((caseItem) => (
               <Card key={caseItem.id} className="hover:shadow-md transition-shadow duration-200 border-l-4 border-l-primary">
                 <CardHeader className="pb-3">
                   <div className="flex justify-between items-start">
@@ -367,7 +434,55 @@ export default function DashboardContent() {
                 </CardFooter>
               </Card>
             ))}
-          </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+              <p className="text-sm text-muted-foreground" dir="ltr">
+                {`Showing ${pageStart + 1}\u2013${pageStart + visibleCases.length} of ${filteredCases.length}`}
+                {filteredCases.length !== cases.length ? ` (filtered from ${cases.length})` : ''}
+              </p>
+
+              {totalPages > 1 && (
+                <Pagination className="mx-0 w-auto justify-end">
+                  <PaginationContent dir="ltr">
+                    <PaginationItem>
+                      <PaginationPrevious
+                        href="#"
+                        aria-disabled={currentPage === 1}
+                        className={currentPage === 1 ? 'pointer-events-none opacity-50' : undefined}
+                        onClick={(e) => { e.preventDefault(); goToPage(currentPage - 1); }}
+                      />
+                    </PaginationItem>
+
+                    {pageNumbers.map((n, index) => (
+                      <PaginationItem key={n === 'ellipsis' ? `gap-${index}` : n}>
+                        {n === 'ellipsis' ? (
+                          <PaginationEllipsis />
+                        ) : (
+                          <PaginationLink
+                            href="#"
+                            isActive={n === currentPage}
+                            onClick={(e) => { e.preventDefault(); goToPage(n); }}
+                          >
+                            {n}
+                          </PaginationLink>
+                        )}
+                      </PaginationItem>
+                    ))}
+
+                    <PaginationItem>
+                      <PaginationNext
+                        href="#"
+                        aria-disabled={currentPage === totalPages}
+                        className={currentPage === totalPages ? 'pointer-events-none opacity-50' : undefined}
+                        onClick={(e) => { e.preventDefault(); goToPage(currentPage + 1); }}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              )}
+            </div>
+          </>
         )}
       </div>
     </div>

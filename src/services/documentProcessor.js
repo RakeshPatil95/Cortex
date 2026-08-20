@@ -188,14 +188,20 @@ export const storeChunks = async (embeddings, metadata) => {
 
 /**
  * Process document end-to-end
+ *
+ * `options.extractedData` lets a caller that has already parsed the file supply
+ * the extraction result (`{ text, markdown }`) so the expensive Firecrawl parse
+ * is not repeated. Used by the bulk importer, which parses once for field
+ * extraction and reuses that markdown for ingestion.
  */
-export const processDocument = async (file, metadata) => {
+export const processDocument = async (file, metadata, options = {}) => {
   try {
     console.log(`Processing document: ${file.name}`);
     
     // Extract text
     const fileType = file.name.split('.').pop();
-    const extractedData = await extractTextFromDocument(file, fileType);
+    const extractedData = options.extractedData
+      || await extractTextFromDocument(file, fileType);
     
     if (!extractedData.text || extractedData.text.trim().length === 0) {
       throw new Error('No text content found in document');

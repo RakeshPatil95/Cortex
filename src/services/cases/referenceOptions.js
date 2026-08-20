@@ -22,6 +22,14 @@ export const CASE_SUBTYPES = [
   { id: '1', name: 'Theft', nameAr: 'سرقة', categoryId: 'Criminal', description: 'Theft cases', isActive: true },
   { id: '2', name: 'Assault', nameAr: 'اعتداء', categoryId: 'Criminal', description: 'Assault cases', isActive: true },
   { id: '3', name: 'Fraud', nameAr: 'احتيال', categoryId: 'Criminal', description: 'Fraud cases', isActive: true },
+  // Charges common in Kuwaiti prosecution files that previously had no valid
+  // sub-type, so the extractor was forced to return null for them.
+  { id: '11', name: 'Forgery', nameAr: 'تزوير', categoryId: 'Criminal', description: 'Forgery of official or commercial documents (التزوير في المحررات)', isActive: true },
+  { id: '12', name: 'Public Order Offence', nameAr: 'الإخلال بالنظام العام', categoryId: 'Criminal', description: 'Breach of public order', isActive: true },
+  { id: '13', name: 'Domicile Violation', nameAr: 'انتهاك حرمة المسكن', categoryId: 'Criminal', description: 'Violation of the sanctity of a dwelling', isActive: true },
+  { id: '14', name: 'Abuse of Office', nameAr: 'إساءة استخدام الوظيفة', categoryId: 'Criminal', description: 'Misuse of public office or authority', isActive: true },
+  { id: '15', name: 'Defamation', nameAr: 'التشهير والإضرار بالسمعة', categoryId: 'Criminal', description: 'Defamation and damage to reputation', isActive: true },
+  { id: '16', name: 'Bounced Cheque', nameAr: 'إصدار شيك بدون رصيد', categoryId: 'Criminal', description: 'Issuing a cheque without sufficient funds', isActive: true },
   { id: '4', name: 'Contract Dispute', nameAr: 'نزاع عقدي', categoryId: 'Civil', description: 'Contract disputes', isActive: true },
   { id: '5', name: 'Property Dispute', nameAr: 'نزاع عقاري', categoryId: 'Civil', description: 'Property disputes', isActive: true },
   { id: '6', name: 'Divorce', nameAr: 'طلاق', categoryId: 'Family', description: 'Divorce cases', isActive: true },
@@ -56,7 +64,30 @@ export const DOCUMENT_TAGS = [
 // Enum-typed columns (must match prisma/schema.prisma CaseStatus / CasePriority / PartyRole).
 export const CASE_STATUSES = ['active', 'pending', 'closed'];
 export const CASE_PRIORITIES = ['high', 'medium', 'low'];
-export const PARTY_ROLES = ['defendant', 'plaintiff', 'co_defendant', 'witness', 'expert', 'lawyer', 'other'];
+// Order matters only for display. `victim`, `public_prosecutor`, `appellant`,
+// `respondent` and `client` were added for Kuwaiti criminal procedure: the
+// party headings in prosecution files (المجني عليه, وكيل النيابة, المستأنف,
+// المستأنف ضده, الموكِّل) previously all collapsed into `other`.
+export const PARTY_ROLES = [
+  'defendant', 'plaintiff', 'co_defendant', 'victim', 'public_prosecutor',
+  'appellant', 'respondent', 'client', 'witness', 'expert', 'lawyer', 'other',
+];
+
+/** Arabic labels for party roles, used to coach the extractor and for display. */
+export const PARTY_ROLE_LABELS_AR = {
+  defendant: 'المتهم',
+  plaintiff: 'المدعي',
+  co_defendant: 'المتهم الثاني',
+  victim: 'المجني عليه',
+  public_prosecutor: 'وكيل النيابة',
+  appellant: 'المستأنف',
+  respondent: 'المستأنف ضده',
+  client: 'الموكِّل',
+  witness: 'الشاهد',
+  expert: 'الخبير',
+  lawyer: 'المحامي / الوكيل',
+  other: 'أخرى',
+};
 
 // Document types offered in the case form's document editor.
 export const DOCUMENT_TYPES = [
@@ -72,6 +103,7 @@ export function getSubtypesForCategory(categoryName) {
 }
 
 export default {
+  PARTY_ROLE_LABELS_AR,
   CASE_CATEGORIES,
   CASE_SUBTYPES,
   CASE_STAGES,

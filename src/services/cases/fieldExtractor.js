@@ -23,6 +23,7 @@ import {
   CASE_STATUSES,
   CASE_PRIORITIES,
   PARTY_ROLES,
+  PARTY_ROLE_LABELS_AR,
   DOCUMENT_TYPES,
   DOCUMENT_TAGS,
   getSubtypesForCategory,
@@ -56,6 +57,15 @@ function buildPrompt(markdown, language = 'en') {
   const stageList = CASE_STAGES.map((s) => s.name).join(', ');
   const documentTypeList = DOCUMENT_TYPES.join(', ');
   const documentTagList = DOCUMENT_TAGS.map((t) => t.name).join(', ');
+  // Sub-types are listed with their Arabic names so an Arabic charge can be
+  // matched without the model having to translate it first.
+  const subtypeGlossary = CASE_SUBTYPES
+    .filter((sub) => sub.nameAr)
+    .map((sub) => `  - ${sub.nameAr} => ${sub.name}`)
+    .join('\n');
+  const roleGlossary = PARTY_ROLES
+    .map((role) => `  - ${PARTY_ROLE_LABELS_AR[role] || role} => ${role}`)
+    .join('\n');
 
   return `You are extracting structured data from a legal case document to pre-fill a case intake form.
 
@@ -95,14 +105,68 @@ Return ONLY a valid JSON object with EXACTLY these keys (use null when the docum
 Sub-types by category (caseSubType MUST be from the chosen category's list):
 ${subtypeLines}
 
+Arabic charge => caseSubType (match the charge text, التهمة, against these):
+${subtypeGlossary}
+
+Arabic party heading => role (the heading above a party's details, e.g. "بيانات المتهم"):
+${roleGlossary}
+
+READING KUWAITI COURT DOCUMENTS
+
+These documents are Kuwaiti (Arabic) prosecution and court files converted to
+markdown. Their tables are right-to-left, so the CELL ORDER IS REVERSED: the
+VALUE comes FIRST and its LABEL SECOND, like \`| 284915710205 | **الرقم المدني** |\`
+— which means 284915710205 is the civil ID. Never read the first cell as a label.
+
+Common field labels:
+- الرقم الآلي / الرقم التسلسلي => serialNumber
+- رقم القضية / القضية رقم => caseNumber
+- التهمة / الجريمة => the charge, used to pick caseSubType
+- المادة القانونية => the statute (put in notes, not a field of its own)
+- اسم المحكمة => the court name
+- وكيل النيابة => public prosecutor (a party, role public_prosecutor)
+- المحامي / رقم قيد المحامي => the advocate; also the value for assignedTo
+- الموكِّل / الوكيل => client / lawyer in a power of attorney (وكالة)
+
+Document types and the date each one carries:
+- محضر جلسة (hearing minutes) => documentType court-order; date label تاريخ الجلسة
+- حكم / حكم محكمة (judgment) => documentType court-order; date label تاريخ إصدار الحكم
+- صحيفة استئناف (appeal petition) => documentType legal-document; date label تاريخ تقديم الاستئناف
+- وكالة (power of attorney) => documentType legal-document; date label تاريخ تحرير الوكالة
+- قرار نيابة (prosecution decision) => documentType court-order; date label تاريخ القرار
+
+CASE CATEGORY
+- A document issued by النيابة العامة (the Public Prosecution) or by a criminal
+  court (محكمة الجنح, محكمة الجنايات) is a Criminal case even when no charge is
+  named — those bodies handle nothing else. Do not leave caseCategory null then.
+- caseSubType is different: it needs a stated charge. Leave it null when the
+  document names none, and never guess a sub-type from the court alone.
+
+DATES
+- Output YYYY-MM-DD. Kuwaiti documents usually write YYYY/MM/DD.
+- If a date is Hijri (marked هـ or ه), convert it to the Gregorian calendar. If
+  both calendars are shown, use the Gregorian one.
+- filedDate: prefer an explicit filing date (تاريخ تقديم / تاريخ القيد / تاريخ الإيداع).
+  If the document states no filing date, fall back to the DOCUMENT'S OWN date
+  from the list above — every one of these document types carries exactly one.
+  Only use null if the document truly has no date at all.
+- nextHearing: only a FUTURE or explicitly adjourned-to hearing (الجلسة القادمة /
+  أُجّلت إلى). A hearing that already took place is NOT nextHearing.
+
+CONSISTENCY
+Two documents of the same type, laid out the same way, must produce the same
+fields. Do not fill a field for one hearing minute and leave it null for another
+that presents the same information in the same place.
+
 Rules:
 - The document may be in Arabic or English. ALWAYS output the ENGLISH enum values above (map Arabic terms to the matching English option).
 - Write ALL free-text values (party name, notes, address, assignedTo, publicProsecutorMemo, and the document title/description) in ${targetLanguage}. If the source uses another language, translate or transliterate names and places into ${targetLanguage}.
 - The enum fields (caseCategory, caseSubType, currentStage, status, priority, party role, documentType), identifiers (serialNumber, caseNumber, civilId), and dates stay in their canonical form regardless of the target language.
 - Civil ID (الرقم المدني) is a 12-digit number. It may appear in a table row or a mislabeled/scrambled cell — scan the ENTIRE document for any 12-digit number and attach it to the correct party's "civilId".
+- Capture EVERY named party, including the victim (المجني عليه), the prosecutor (وكيل النيابة) and each advocate — not only the accused.
 - Populate EVERY field for which the document provides information (name, civil ID, phone, email, address, dates, assignee, memo). Only use null when the value is genuinely absent — do not leave a field null if the information exists in the text.
 - Do not fabricate identifiers, dates, or names. If unsure, use null.
-- Dates must be YYYY-MM-DD.
+- priority is an internal triage value that court documents do not state; leave it null unless the document explicitly marks the case urgent (عاجل/مستعجل).
 - Return ONLY the JSON object, no prose, no markdown fences.
 
 DOCUMENT:

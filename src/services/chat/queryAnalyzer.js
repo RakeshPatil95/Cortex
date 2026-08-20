@@ -59,7 +59,8 @@ CASE_PARTIES Table (People involved):
 - caseId: Links to legal_cases.id
 - name: Full name of party
 - civilId: National ID number
-- role: PartyRole enum (defendant, plaintiff, co_defendant, witness, expert, lawyer, other)
+- role: PartyRole enum (defendant, plaintiff, co_defendant, victim, public_prosecutor, appellant, respondent, client, witness, expert, lawyer, other)
+  Arabic equivalents: المتهم=defendant, المجني عليه=victim, وكيل النيابة=public_prosecutor, المستأنف=appellant, المستأنف ضده=respondent, الموكِّل=client, المحامي=lawyer, الشاهد=witness
 - address: Full address
 - phone: Contact number
 - email: Email address
@@ -147,7 +148,7 @@ FIELD-SPECIFIC UNDERSTANDING:
 - status: active, pending, closed
 - priority: high, medium, low
 - currentStage: Investigation, Trial, Appeal, etc.
-- role (parties): defendant, plaintiff, witness, expert, lawyer
+- role (parties): defendant, plaintiff, co_defendant, victim, public_prosecutor, appellant, respondent, client, witness, expert, lawyer, other
 - documentType: Evidence, Contract, Correspondence, Court Order
 - tags: Array of categorization tags
 

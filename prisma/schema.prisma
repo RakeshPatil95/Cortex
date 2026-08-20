@@ -33,6 +33,13 @@ enum PartyRole {
   expert
   lawyer
   other
+  // Kuwaiti criminal procedure roles. Appended (not reordered) because
+  // PostgreSQL enum values cannot be removed or reordered in place.
+  victim
+  public_prosecutor
+  appellant
+  respondent
+  client
 }
 
 enum ChatRole {
