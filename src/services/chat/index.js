@@ -5,7 +5,7 @@
 
 import { analyzeQueryIntent } from './queryAnalyzer.js';
 import { searchWithVector } from './vectorSearch.js';
-import { formatResponse } from './responseFormatter.js';
+import { formatCaseResults, formatResponse } from './responseFormatter.js';
 import { ChatOpenAI } from '@langchain/openai';
 import { PrismaClient } from '@/generated/prisma';
 import { applyQueryTransforms } from '../retrieval/queryTransform.js';
@@ -18,6 +18,11 @@ import {
   resolveCaseScope,
   toChatCaseResult,
 } from './caseScope.js';
+import {
+  analyzeExhaustiveCaseQuery,
+  formatExhaustiveCaseMessage,
+  resolveExhaustiveCaseQuery,
+} from './exhaustiveCaseSearch.js';
 
 const prisma = new PrismaClient();
 
@@ -280,6 +285,7 @@ export async function processChatMessage(message, userId, history = [], filters 
         userId,
         texts: [message, improvedQuery],
       }));
+    const exhaustiveCaseQuery = analyzeExhaustiveCaseQuery(message);
 
     if (caseScope.case) {
       const scopedCaseId = caseScope.case.id;
@@ -332,6 +338,42 @@ export async function processChatMessage(message, userId, history = [], filters 
       documentResults = {
         documents: [],
         searchStrategy: 'case_scoped_not_found',
+      };
+    } else if (exhaustiveCaseQuery.isExhaustive) {
+      const exhaustiveResult = await perf.step('exhaustive-case-search', () => (
+        resolveExhaustiveCaseQuery({
+          prisma,
+          userId,
+          query: message,
+          intent,
+          assignedTo: assigneeScope.assignee,
+        })
+      ));
+      caseResults = exhaustiveResult.cases.map(toChatCaseResult);
+      documentResults = {
+        documents: [],
+        searchStrategy: 'structured_exhaustive',
+        totalMatches: exhaustiveResult.matchingCases,
+      };
+
+      return {
+        message: formatExhaustiveCaseMessage(exhaustiveResult),
+        results: {
+          cases: formatCaseResults(caseResults),
+          documents: [],
+        },
+        suggestedQuestions: [],
+        intent: 'case',
+        confidence: 1,
+        totalResults: {
+          cases: exhaustiveResult.matchingCases,
+          documents: 0,
+        },
+        caseTotals: {
+          total: exhaustiveResult.totalCases,
+          matching: exhaustiveResult.matchingCases,
+          byStatus: exhaustiveResult.statusBreakdown,
+        },
       };
     } else if (assigneeScope.assignee) {
       const scopedCases = assigneeScope.cases.slice(0, 8);

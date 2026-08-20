@@ -290,7 +290,7 @@ Generate a professional, conversational response:`;
  * @param {Array} caseResults - Raw case results
  * @returns {Array} Formatted case results
  */
-function formatCaseResults(caseResults) {
+export function formatCaseResults(caseResults) {
   if (!Array.isArray(caseResults)) {
     return [];
   }
